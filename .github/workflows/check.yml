@@ -1,0 +1,115 @@
+# Only what a maintainer needs: a syntax check and a bundle build. No test
+# suite exists, so this does not pretend to be one - it catches the class of
+# mistake that has actually bitten this project, namely a PowerShell script
+# that parses fine but is left broken by an edit.
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  syntax:
+    name: Parse and bundle
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse every script
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $failures = @()
+
+          Get-ChildItem -Path . -Filter *.ps1 -File | ForEach-Object {
+            $errors = $null
+            $null = [System.Management.Automation.Language.Parser]::ParseFile(
+                $_.FullName, [ref]$null, [ref]$errors)
+
+            if ($errors -and $errors.Count) {
+              $failures += $_
+              Write-Host "FAIL $($_.Name)" -ForegroundColor Red
+              $errors | ForEach-Object {
+                Write-Host ("     line {0}: {1}" -f $_.Extent.StartLineNumber, $_.Message)
+              }
+            }
+            else {
+              Write-Host "ok   $($_.Name)" -ForegroundColor Green
+            }
+          }
+
+          if ($failures.Count) {
+            throw "$($failures.Count) script(s) failed to parse."
+          }
+          Write-Host ''
+          Write-Host 'All scripts parse.' -ForegroundColor Green
+
+      - name: Confirm the app icon is regenerable
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $before = (Get-FileHash assets\icon.ico -Algorithm SHA256).Hash
+
+          .\Generate-Icon.ps1 | Out-Null
+          $after = (Get-FileHash assets\icon.ico -Algorithm SHA256).Hash
+
+          if ($before -ne $after) {
+            # A changing hash means the committed icon.ico no longer matches
+            # what Generate-Icon.ps1 produces, so the repo and the artwork have
+            # drifted apart. Fail rather than let the mismatch reach a release.
+            throw ("assets\icon.ico is stale. Generated $after but the file is $before.`n" +
+                   'Commit the regenerated artwork.')
+          }
+          Write-Host "assets\icon.ico is reproducible ($after)" -ForegroundColor Green
+
+      - name: Build and verify the release bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          .\Build-Release.ps1 -Version 0.0.0-ci
+
+      - name: Extract the bundle the way a user would
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+          $zip = 'dist\windows-folder-icon-tool-v0.0.0-ci.zip'
+          $out = Join-Path $env:RUNNER_TEMP 'bundle'
+
+          [System.IO.Compression.ZipFile]::ExtractToDirectory(
+              (Resolve-Path $zip).Path, $out)
+
+          # Install.ps1 resolves assets\icon.ico relative to itself, so a
+          # bundle that extracts flat instead of keeping the folder is broken
+          # even though it unzips without complaint.
+          $ico = Join-Path $out 'assets\icon.ico'
+          if (-not (Test-Path $ico)) {
+            throw "assets\icon.ico missing after extraction - the archive layout is wrong."
+          }
+
+          $bytes = [System.IO.File]::ReadAllBytes($ico)
+          $frames = [BitConverter]::ToUInt16($bytes, 4)
+          Write-Host "extracted assets\icon.ico: $frames frames" -ForegroundColor Green
+
+          Write-Host ''
+          Write-Host 'Bundle contents verified.' -ForegroundColor Green
+
+      - name: Upload the bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 7
