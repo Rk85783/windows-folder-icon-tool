@@ -23,3 +23,6 @@ Desktop.ini
 *.tmp
 *.bak
 *-diff.txt
+
+# Release bundles are build output, not source. Build-Release.ps1 writes them.
+dist/

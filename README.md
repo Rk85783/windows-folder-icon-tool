@@ -48,6 +48,13 @@ No modules to install. Nothing is downloaded.
 
 ## Install
 
+**Download** the latest bundle from
+[Releases](https://github.com/Rk85783/windows-folder-icon-tool/releases/latest),
+extract it anywhere, then right-click `Install.ps1` and choose
+**Run with PowerShell**.
+
+Or from a clone:
+
 ```powershell
 git clone git@github-personal:Rk85783/windows-folder-icon-tool.git
 cd windows-folder-icon-tool
@@ -55,7 +62,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Install.ps1
 ```
 
 `Install.ps1` registers two context-menu entries and does not copy anything —
-the scripts run straight from wherever you cloned them.
+the scripts run straight from wherever you put them.
 
 To install into `%LOCALAPPDATA%\Programs\FolderIconTool` instead, copy the
 folder there first and then run `Install.ps1`.
@@ -277,6 +284,26 @@ re-run it after replacing any of those.
 
 `assets\social-card.png` is the image to upload under **Settings → General →
 Social preview**; `assets\icon-512.png` is the repository icon.
+
+## Building a release bundle
+
+`Build-Release.ps1` stages only what an installer needs, writes
+`dist\windows-folder-icon-tool-v<version>.zip`, and verifies the archive
+before reporting success.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Build-Release.ps1 -Version 1.0.0
+```
+
+It leaves `Generate-Icon.ps1` and `Build-Banner.ps1` out on purpose: those
+rebuild `assets\` from the repo's `docs\` screenshots and have nothing to work
+from inside a bundle. Tag the commit, push the tag, then attach the zip:
+
+```powershell
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+gh release create v1.0.0 "dist\windows-folder-icon-tool-v1.0.0.zip" --notes-file RELEASE-NOTES.md
+```
 
 ## License
 
