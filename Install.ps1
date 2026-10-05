@@ -1,4 +1,4 @@
-<#
+﻿<#
     Install.ps1
 
     Registers the two right-click entries under HKCU (per-user, no admin
@@ -64,8 +64,8 @@ Write-Host ''
 # right-clicked. It deliberately does not touch the folder-background menu,
 # so the existing "New / Paste / Properties" items are untouched.
 Write-Host 'Context menu entries (current user):' -ForegroundColor Cyan
-New-ContextMenuEntry -KeyName 'SetFolderIcon'   -Label 'Set Folder Icon'   -MenuIcon 'shell32.dll,16769' -ExtraArgs @()
-New-ContextMenuEntry -KeyName 'ResetFolderIcon' -Label 'Reset Folder Icon' -MenuIcon 'shell32.dll,131'   -ExtraArgs @('-Reset')
+New-ContextMenuEntry -KeyName 'SetFolderIcon'   -Label 'Set Folder Icon'   -MenuIcon 'C:\Users\Rohit\AppData\Local\Programs\FolderIconTool\assets\icon.ico,0' -ExtraArgs @()
+New-ContextMenuEntry -KeyName 'ResetFolderIcon' -Label 'Reset Folder Icon' -MenuIcon 'C:\Users\Rohit\AppData\Local\Programs\FolderIconTool\assets\icon.ico,0'   -ExtraArgs @('-Reset')
 
 # --- cleanup of the broken entries from a previous tool -------------------
 $deadKeys = @(
