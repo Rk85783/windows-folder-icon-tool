@@ -58,6 +58,38 @@ Right-click any folder → **Set Folder Icon** → choose an image.
 
 Right-click again → **Reset Folder Icon** restores the default.
 
+### Walkthrough
+
+**1. A Projects drive where each folder carries its own icon**
+
+Every folder can have a different one. The plain yellow folders are the ones
+that have not been set yet.
+
+![A Windows Projects drive where many folders carry stack icons — Angular, AWS, Docker, Laravel, MongoDB, MySQL, React, Postgres, Redis, Stripe](docs/01-projects-drive-custom-icons.png)
+
+**2. Right-click any folder**
+
+`Set Folder Icon` and `Reset Folder Icon` appear alongside the entries Windows
+adds itself.
+
+![The Explorer right-click menu with Set Folder Icon and Reset Folder Icon added](docs/02-right-click-context-menu.png)
+
+**3. Choose an image**
+
+The standard Windows file picker, filtered to the formats GDI+ can decode.
+Anything else gets a specific error instead of a generic failure.
+
+![The image picker dialog titled Choose an image for this folder icon](docs/03-image-picker-dialog.png)
+
+**4. Icon applied**
+
+`local` was left alone; `Maps` was given an icon. Both entries move and rename
+together with their folder.
+
+![Two Explorer folders side by side: one with the default icon, one with a custom robot icon](docs/04-folder-icon-preview.png)
+
+### Supported formats
+
 | Works | Does not |
 |---|---|
 | `.ico` `.png` `.jpg` `.jpeg` `.bmp` `.gif` `.tif` `.tiff` `.emf` `.wmf` | `.svg` `.webp` `.heic` `.avif` `.pdf` camera RAW |
