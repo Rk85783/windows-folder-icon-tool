@@ -1,0 +1,21 @@
+# Normalise line endings so the repo does not churn between machines.
+# PowerShell on Windows is happiest with CRLF checked out; docs stay LF.
+
+* text=auto
+
+*.ps1    text eol=crlf
+*.psm1   text eol=crlf
+*.cmd    text eol=crlf
+*.bat    text eol=crlf
+
+*.md     text eol=lf
+LICENSE  text eol=lf
+.gitignore   text eol=lf
+.gitattributes text eol=lf
+
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.zip    binary

@@ -1,0 +1,25 @@
+# Ignore Windows / editor noise
+
+# Explorer creates this in some folders. This project writes its own
+# desktop.ini into target folders, so make sure one can never be committed.
+desktop.ini
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+.DS_Store
+*.lnk
+
+# Editor / IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+*~
+
+# Local scratch output from testing
+*.tmp
+*.bak
+*-diff.txt
