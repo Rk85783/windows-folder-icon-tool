@@ -54,7 +54,7 @@ the folder, moving it, and copying it to another drive.
 ## SHA-256
 
 ```
-4AAD931DE4F08D33BE8B660D4A77D1EA0753C6064C7747EA111F6C05F152B6F5  windows-folder-icon-tool-v1.0.0.zip
+25F663CF0E8568986D41DB1852F9076462D1797EE2388DE9D18A123F748993D3  windows-folder-icon-tool-v1.0.0.zip
 ```
 
 Verify after download:
