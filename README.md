@@ -9,6 +9,8 @@ copies to other drives. No install, no admin rights, no dependencies.
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-%23512BD4)
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4)
 
+![Windows Folder Icon Tool — set any custom icon on any Windows folder from the right-click menu](assets/banner-hero.png)
+
 ---
 
 ## Why this exists
@@ -59,6 +61,8 @@ Right-click any folder → **Set Folder Icon** → choose an image.
 Right-click again → **Reset Folder Icon** restores the default.
 
 ### Walkthrough
+
+![Windows Folder Icon Tool — right-click a folder, choose Set Folder Icon, pick an image, the icon survives renames and moves](assets/banner-steps.png)
 
 **1. A Projects drive where each folder carries its own icon**
 
@@ -248,6 +252,25 @@ Made by **Rohit Kumar Mahor** — [GitHub](https://github.com/Rk85783) ·
 [LinkedIn](https://www.linkedin.com/in/rohit-kumar-mahor-8761a31b6/)
 
 Found a bug or have an idea? Open an issue.
+
+## Regenerating the artwork
+
+The icon and the banner images are drawn programmatically — there are no binary
+assets checked in that nobody can reproduce.
+
+```powershell
+# assets\icon-*.png and assets\icon.ico  (blue folder + amber spark)
+powershell -ExecutionPolicy Bypass -File .\Generate-Icon.ps1
+
+# assets\banner-hero.png, banner-steps.png, social-card.png
+powershell -ExecutionPolicy Bypass -File .\Build-Banner.ps1
+```
+
+`Build-Banner.ps1` reads the screenshots in `docs\` and crops them to fit, so
+re-run it after replacing any of those.
+
+`assets\social-card.png` is the image to upload under **Settings → General →
+Social preview**; `assets\icon-512.png` is the repository icon.
 
 ## License
 
