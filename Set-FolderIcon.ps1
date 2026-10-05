@@ -144,6 +144,11 @@ function Show-Message {
         [Console]::Error.WriteLine($Text)
         return
     }
+
+    # Note: a custom glyph here would need MessageBoxIndirect / TaskDialog,
+    # neither of which is safe enough to justify. Any MB_ICON* style flag
+    # raises an AccessViolationException on this call, and a flag-less box
+    # renders with an empty body. The stock information / error marks stay.
     [void][System.Windows.Forms.MessageBox]::Show(
         $Text, 'Folder Icon Tool', $Buttons, $Icon)
 }
@@ -164,6 +169,11 @@ function Select-SourceImage {
         $dlg.Multiselect  = $false
         $dlg.RestoreDirectory = $true
         $dlg.InitialDirectory = $FolderPath
+
+        # Note: FileDialog has no settable Icon property on .NET Framework, so
+        # the app glyph cannot be put on this window. It exists only from .NET
+        # Core onwards, which PowerShell 5.1 does not run on. Setting it here
+        # fails the whole run with "property 'Icon' cannot be found".
         if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) {
             return $null
         }

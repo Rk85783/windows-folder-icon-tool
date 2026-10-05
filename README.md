@@ -1,13 +1,19 @@
-# windows-folder-icon-tool
+<p align="center">
+  <img src="assets/icon-256.png" alt="Windows Folder Icon Tool logo" width="112" height="112">
+</p>
+
+# Windows Folder Icon Tool
 
 Give any Windows folder its own icon, from the right-click menu.
 
 Pick an image, and the folder keeps that icon — through renames, moves, and
 copies to other drives. No install, no admin rights, no dependencies.
 
-![MIT](https://img.shields.io/badge/license-MIT-green)
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-%23512BD4)
-![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4)
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
+  <img src="https://img.shields.io/badge/PowerShell-5.1%2B-%23512BD4" alt="PowerShell 5.1+">
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4" alt="Windows 10 | 11">
+</p>
 
 ![Windows Folder Icon Tool — set any custom icon on any Windows folder from the right-click menu](assets/banner-hero.png)
 

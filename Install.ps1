@@ -46,10 +46,20 @@ function New-ContextMenuEntry {
         '-FolderPath', '"%V"'
     ) + $ExtraArgs
 
-    $commandLine = 'powershell.exe ' + ($arguments -join ' ')
+$commandLine = 'powershell.exe ' + ($arguments -join ' ')
 
     Set-ItemProperty -Path $key -Name '(default)' -Value $Label -Type String
-    Set-ItemProperty -Path $key -Name 'Icon'    -Value $MenuIcon -Type String
+
+    # A null Icon value cannot be written with Set-ItemProperty, so clear the
+    # property instead. Leaves Explorer on its own default glyph rather than
+    # leaving a stale icon from a previous install behind.
+    if ($MenuIcon) {
+        Set-ItemProperty -Path $key -Name 'Icon' -Value $MenuIcon -Type String
+    }
+    else {
+        Remove-ItemProperty -Path $key -Name 'Icon' -ErrorAction SilentlyContinue
+    }
+
     Set-ItemProperty -Path $cmd -Name '(default)' -Value $commandLine -Type String
 
     Write-Host ("  registered : {0}  ->  {1}" -f $Label, $commandLine) -ForegroundColor DarkGreen
@@ -60,12 +70,28 @@ Write-Host 'Folder Icon Tool - installing' -ForegroundColor Cyan
 Write-Host ("  location : {0}" -f $toolRoot)
 Write-Host ''
 
+# The menu glyph is the same artwork the tool writes into folders, resolved
+# relative to this script so the install works from any location and any
+# account. A hardcoded profile path here breaks for every other user.
+$menuIconFile = Join-Path $toolRoot 'assets\icon.ico'
+$menuIcon = if (Test-Path -LiteralPath $menuIconFile) { "$menuIconFile,0" } else { $null }
+
+if ($menuIcon) {
+    Write-Host ("  menu icon : {0}" -f $menuIconFile) -ForegroundColor DarkGray
+}
+else {
+    # An empty Icon value makes Explorer fall back to a generic page glyph.
+    # Not fatal - the entries still work - so warn and carry on.
+    Write-Host '  menu icon : not found, Explorer will use a default glyph.' -ForegroundColor DarkYellow
+    Write-Host ('              expected assets\icon.ico under {0}' -f $toolRoot) -ForegroundColor DarkYellow
+}
+
 # HKCU\Software\Classes\Directory\shell applies to a folder that was
 # right-clicked. It deliberately does not touch the folder-background menu,
 # so the existing "New / Paste / Properties" items are untouched.
 Write-Host 'Context menu entries (current user):' -ForegroundColor Cyan
-New-ContextMenuEntry -KeyName 'SetFolderIcon'   -Label 'Set Folder Icon'   -MenuIcon 'C:\Users\Rohit\AppData\Local\Programs\FolderIconTool\assets\icon.ico,0' -ExtraArgs @()
-New-ContextMenuEntry -KeyName 'ResetFolderIcon' -Label 'Reset Folder Icon' -MenuIcon 'C:\Users\Rohit\AppData\Local\Programs\FolderIconTool\assets\icon.ico,0'   -ExtraArgs @('-Reset')
+New-ContextMenuEntry -KeyName 'SetFolderIcon'   -Label 'Set Folder Icon'   -MenuIcon $menuIcon -ExtraArgs @()
+New-ContextMenuEntry -KeyName 'ResetFolderIcon' -Label 'Reset Folder Icon' -MenuIcon $menuIcon   -ExtraArgs @('-Reset')
 
 # --- cleanup of the broken entries from a previous tool -------------------
 $deadKeys = @(
